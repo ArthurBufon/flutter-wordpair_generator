@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 
@@ -37,22 +37,59 @@ class RandomWordsState extends State<RandomWords> {
       title: Text(pair.asPascalCase, style: TextStyle(fontSize: 18.0)),
       trailing: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
           color: alreadySaved ? Colors.red : null),
-          onTap:() {
-            setState(() {
-              if(alreadySaved){
-                _savedWordPairs.remove(pair);
-              }else{
-                _savedWordPairs.add(pair);
-              }
-            });
-          },
+      onTap: () {
+        setState(() {
+          if (alreadySaved) {
+            _savedWordPairs.remove(pair);
+          } else {
+            _savedWordPairs.add(pair);
+          }
+        });
+      },
     );
   }
+
+void _pushSaved()
+{
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (BuildContext context)
+      {
+        final Iterable<ListTile> tiles =
+        _savedWordPairs.map((WordPair pair){
+          return ListTile(
+            title: Text(pair.asPascalCase, style: TextStyle(fontSize: 16.0))
+          );
+        });
+
+        final List<Widget> divided = ListTile.divideTiles(
+          context: context,
+          tiles: tiles
+        ).toList();
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Saved WordPairs')
+          ),
+          body: ListView(children: divided),
+        );
+      }
+    )
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('WordPair Generator')),
+      appBar: AppBar(
+        title: Text('WordPair Generator'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.list),
+            onPressed: _pushSaved,
+          )
+        ],
+      ),
       body: _buildList(),
     );
   }
